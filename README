@@ -1,0 +1,47 @@
+--------------
+Text::BarGraph
+--------------
+
+Copyright (c) 2001 Kirk Baucom.  All rights reserved.  This
+module can be distributed or modified under the 'Artistic License',
+as distributed with Perl.
+
+
+Overview
+--------
+
+This module generates text bar graphs based on data sent to it in a hash.
+
+
+Requirements
+------------
+
+If you want the module to automatically determine the size of your screen
+when generating a graph, you will need the Term::Readkey module, which should
+have come with your standard perl distribution.
+
+
+Installation
+------------
+
+perl Makefile.PL
+make
+make install
+
+Usage
+-----
+
+$g = Text::BarGraph->new();
+  
+%hash = (
+  alpha => 30,
+  beta  => 40,
+  gamma => 25
+);      
+
+print $g->graph(\%hash);
+
+An example program is included that explains all of the options.
+
+--
+ Kirk Baucom <kbaucom@schizoid.com>
