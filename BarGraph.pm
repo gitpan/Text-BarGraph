@@ -7,12 +7,13 @@ package Text::BarGraph;
 use strict;
 use vars qw /$VERSION %fields $AUTOLOAD %data/;
 
-$VERSION = 0.01;
+$VERSION = 0.2;
 
 
 %fields = (
-	dot	=>	".",	# character to graph with
+	dot	=>	"#",	# character to graph with
 	num	=>	undef,	# display data value in ()'s
+	color	=>	undef,	# whether or not to color the graph
 	sort	=>	"key",	# key or data
 	zero	=>	0,	# value to start the graph with
 	max_data =>	0,	# where to end the graph
@@ -55,8 +56,9 @@ sub graph {
   my ($self, $data, $dot) = @_;
   my ($gtext, $junk) = '';
   
-  if($self->{'autosize'}) {
-    require Term::ReadKey;
+  # silently fail to autoresize if we are not talking to a tty
+  # OR if the Term::ReadKey module doesn't exist
+  if($self->{'autosize'} && -t STDOUT && eval "require Term::ReadKey") {
     import Term::ReadKey;
     ($self->{'xsize'}, $junk, $junk, $junk) = GetTerminalSize('STDOUT');
   }
@@ -89,7 +91,7 @@ sub graph {
     $barsize = $self->{'xsize'};
   } 
   else { 
-    $sep = " ";
+    $sep = " "; 
     if($self->{'num'}) {
       $barsize = $self->{'xsize'} - ($tag + $data_length + 4);
     }
@@ -101,37 +103,52 @@ sub graph {
   if($self->{'autozero'}) { 
     $self->{'zero'} = int($min_data - (($max_data - $min_data) / ($barsize - 1))); 
   }
+  
+  # determine points to change colors
+  my ($p1, $p2, $p3) = 0; 
+  if($self->{'color'}) {
+    $p1 = int($barsize * .25);
+    $p2 = $p1*2; $p3 = $p1*3;
+  }
 
   if($max_data) { $scale = $barsize / ($max_data - $self->{'zero'}); }
   $sort = $self->{'sort'};
-
+  my $dotstring = '';
   # print stuff
-  if($self->{'num'}) {
-    for(sort $sort keys %data) { 
-      $dots = int(($data{$_} - $self->{'zero'}) * $scale);
-      if($self->{'dataonly'}) { }
-      else {
-        $gtext .= sprintf "%${tag}s (%${data_length}d)${sep}%s\n", 
-             $_, $data{$_}, ${dot}x$dots;
-      }
+  for(sort $sort keys %data) {
+    $dots = int(($data{$_} - $self->{'zero'}) * $scale);
+    if($self->{'color'}) { $dotstring = colordots($p1, $p2, $p3, $dots, $self->{'dot'}); }
+    else { $dotstring = ${dot}x$dots; }
+    if($self->{'num'}) {
+      $gtext .= sprintf "%${tag}s (%${data_length}d)${sep}%s\n", 
+         $_, $data{$_}, $dotstring;
     }
-    if($self->{'zero'} && !$self->{'dataonly'}) {
+    else { $gtext .= sprintf "%${tag}s${sep}%s\n", $_, $dotstring; }
+  }
+
+  # we need to add a line giving the start point if it's not zero
+  if($self->{'zero'}) {
+    if($self->{'num'}) {
       $gtext .= sprintf "%${tag}s  %${data_length}d /\n", '<zero>', $self->{'zero'};
     }
-  }
-  else {
-    for(sort $sort keys %data) { 
-      $dots = int(($data{$_} - $self->{'zero'}) * $scale);
-      if($self->{'dataonly'}) { }
-      else {
-        $gtext .= sprintf "%${tag}s${sep}%s\n", $_, ${dot}x$dots;
-      }
-    }
-    if($self->{'zero'} && !$self->{'dataonly'}) {
-      $gtext .= sprintf "%${tag}s/\n", "$self->{'zero'} ";
-    }
+    else { $gtext .= sprintf "%${tag}s /\n", "$self->{'zero'}"; }
   }
   return $gtext;
+}
+
+sub colordots {
+  my ($p1, $p2, $p3, $dots, $dot) = @_;
+
+  my $dotstring = "\e[34m"; # start blue
+
+  for(1..$dots) {
+    if($_ eq $p1) { $dotstring .= "\e[32m"; } # green
+    elsif($_ eq $p2) { $dotstring .= "\e[33m"; } # yellow
+    elsif($_ eq $p3) { $dotstring .= "\e[31m"; } # red
+    $dotstring .= $dot;
+  }
+  $dotstring .= "\e[0m"; # turn the color off
+  return $dotstring;
 }
 
 sub key {
@@ -180,8 +197,9 @@ $g->{'option_name'} = "value";
 
 The options (and default values) that are available are:
 
-  dot     =>      ".",    # character to graph with
+  dot     =>      "#",    # character to graph with
   num     =>      undef,  # display data value in ()'s
+  color	  =>	  undef,  # whether or not to color the graph
   sort    =>      "key",  # key or data
   zero    =>      0,      # value to start the graph with
   max_data =>     0, 	  # where to end the graph

@@ -1,6 +1,6 @@
---------------
-Text::BarGraph
---------------
+---------------------
+Text::BarGraph  v0.02
+---------------------
 
 Copyright (c) 2001 Kirk Baucom.  All rights reserved.  This
 module can be distributed or modified under the 'Artistic License',
@@ -17,9 +17,19 @@ Requirements
 ------------
 
 If you want the module to automatically determine the size of your screen
-when generating a graph, you will need the Term::Readkey module, which should
-have come with your standard perl distribution.
+when generating a graph, you will need the Term::ReadKey module, which should
+have come with your standard perl distribution. If you request the graph
+to be automatically sized, and the module is not there, it will silently
+revert to 80 columns.
 
+Changes in v0.02
+----------------
+
+ - Fixed autosize so that if the Term::ReadKey module is not available, or
+   if STDOUT is not a terminal, it won't attempt to autosize.
+
+ - Added "color" feature, to colorcode the graph based on the size of the
+   bars
 
 Installation
 ------------

@@ -41,14 +41,16 @@ $g->{'xsize'} = 80;      # default: 80
 # whether to sort the data by keys ("key") or values ("data"). 
 $g->{'sort'} = "data";  # default: "key"
 
-
+# add color to the graph, denoting the size of the bars
+$g->{'color'} = 1;      # default: 0 (off)
 
 # a small graph of some random numbers  
 
 %hash = (
-  alpha => 30,
-  beta  => 40,
-  gamma => 25
+  alpha => 300,
+  beta  => 400,
+  gamma => 250,
+  delta => 350,
 );      
 
 # print the graph. note that the graph routine just returns a text string,
