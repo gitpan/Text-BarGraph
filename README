@@ -1,28 +1,38 @@
 ---------------------
-Text::BarGraph  v0.02
+Text::BarGraph  v0.3
 ---------------------
 
 Copyright (c) 2001 Kirk Baucom.  All rights reserved.  This
 module can be distributed or modified under the 'Artistic License',
 as distributed with Perl.
 
+Website:
+--------
+You can find any updates at:
+http://www.robobunny.com/projects/bargraph
+or at http://search.cpan.org
 
 Overview
 --------
-
 This module generates text bar graphs based on data sent to it in a hash.
 
+Contributors
+------------
+Robert Eric Pearse <pearse@robertpearse.com>: Numeric key sorting
 
 Requirements
 ------------
-
 If you want the module to automatically determine the size of your screen
-when generating a graph, you will need the Term::ReadKey module, which should
-have come with your standard perl distribution. If you request the graph
-to be automatically sized, and the module is not there, it will silently
-revert to 80 columns.
+when generating a graph, you will need the Term::ReadKey module, which you
+can get from http://search.cpan.org. If you request the graph to be
+automatically sized, and the module is not there, it will silently revert
+to 80 columns.
 
-Changes in v0.02
+Changes in v0.3
+---------------
+ - Added ability to sort keys numerically
+
+Changes in v0.2
 ----------------
 
  - Fixed autosize so that if the Term::ReadKey module is not available, or

@@ -41,6 +41,9 @@ $g->{'xsize'} = 80;      # default: 80
 # whether to sort the data by keys ("key") or values ("data"). 
 $g->{'sort'} = "data";  # default: "key"
 
+# whether to sort keys numerically or stringily (stringmatogically?)
+$g->{'sorttype'} = "numeric";  # default: "string"
+
 # add color to the graph, denoting the size of the bars
 $g->{'color'} = 1;      # default: 0 (off)
 

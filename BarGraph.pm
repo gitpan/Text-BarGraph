@@ -7,7 +7,7 @@ package Text::BarGraph;
 use strict;
 use vars qw /$VERSION %fields $AUTOLOAD %data/;
 
-$VERSION = 0.2;
+$VERSION = 0.3;
 
 
 %fields = (
@@ -15,6 +15,7 @@ $VERSION = 0.2;
 	num	=>	undef,	# display data value in ()'s
 	color	=>	undef,	# whether or not to color the graph
 	sort	=>	"key",	# key or data
+	sorttype =>	"string", # string or numeric, ignored if sort is 'data'
 	zero	=>	0,	# value to start the graph with
 	max_data =>	0,	# where to end the graph
 	autozero =>	undef,	# automatically set start value
@@ -84,7 +85,7 @@ sub graph {
 
   my $data_length = length($max_data);
   my $sep = " ";
-  my ($barsize, $sort, $dots) = '';
+  my ($barsize, $sort_sub, $dots) = '';
 
   if($tag > ($self->{'xsize'} * .25)) { 
     $sep = "\n"; 
@@ -112,10 +113,17 @@ sub graph {
   }
 
   if($max_data) { $scale = $barsize / ($max_data - $self->{'zero'}); }
-  $sort = $self->{'sort'};
+
+  if($self->{'sort'} eq "key") {
+    $sort_sub = "$self->{'sort'}_$self->{'sorttype'}";
+  }
+  else {
+    $sort_sub = $self->{'sort'};
+  }
+
   my $dotstring = '';
   # print stuff
-  for(sort $sort keys %data) {
+  for(sort $sort_sub keys %data) {
     $dots = int(($data{$_} - $self->{'zero'}) * $scale);
     if($self->{'color'}) { $dotstring = colordots($p1, $p2, $p3, $dots, $self->{'dot'}); }
     else { $dotstring = ${dot}x$dots; }
@@ -151,8 +159,12 @@ sub colordots {
   return $dotstring;
 }
 
-sub key {
+sub key_string {
   return $a cmp $b;
+}
+
+sub key_numeric {
+  return $a <=> $b;
 }
 
 sub data {
@@ -197,10 +209,11 @@ $g->{'option_name'} = "value";
 
 The options (and default values) that are available are:
 
-  dot     =>      "#",    # character to graph with
+  dot     =>      ".",    # character to graph with
   num     =>      undef,  # display data value in ()'s
   color	  =>	  undef,  # whether or not to color the graph
   sort    =>      "key",  # key or data
+  sorttype =>     "string", # string or numeric, ignored if sort is 'data'
   zero    =>      0,      # value to start the graph with
   max_data =>     0, 	  # where to end the graph
   autozero =>     undef,  # automatically set start value
