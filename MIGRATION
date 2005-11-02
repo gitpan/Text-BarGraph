@@ -1,0 +1,12 @@
+Migrating to Text::BarGraph Version 1.0
+---------------------------------------
+
+Due to some unfortunate naming choices, some of the method
+names are changing as of version 1.0 to avoid confusion.
+The changes are listed below.
+
+Old name	New name
+--------	--------
+xsize		columns
+sort		sortvalue
+color		enable_color

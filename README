@@ -1,5 +1,5 @@
 ---------------------
-Text::BarGraph  v0.3
+Text::BarGraph  v1.0
 ---------------------
 
 Copyright (c) 2001 Kirk Baucom.  All rights reserved.  This
@@ -28,18 +28,8 @@ can get from http://search.cpan.org. If you request the graph to be
 automatically sized, and the module is not there, it will silently revert
 to 80 columns.
 
-Changes in v0.3
----------------
- - Added ability to sort keys numerically
-
-Changes in v0.2
-----------------
-
- - Fixed autosize so that if the Term::ReadKey module is not available, or
-   if STDOUT is not a terminal, it won't attempt to autosize.
-
- - Added "color" feature, to colorcode the graph based on the size of the
-   bars
+Term::ANSIColor is used if available. Raw ANSI escape sequences are used
+otherwise.
 
 Installation
 ------------
@@ -47,21 +37,3 @@ Installation
 perl Makefile.PL
 make
 make install
-
-Usage
------
-
-$g = Text::BarGraph->new();
-  
-%hash = (
-  alpha => 30,
-  beta  => 40,
-  gamma => 25
-);      
-
-print $g->graph(\%hash);
-
-An example program is included that explains all of the options.
-
---
- Kirk Baucom <kbaucom@schizoid.com>

@@ -3,5 +3,8 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'Text::BarGraph',
-    'VERSION_FROM' => 'BarGraph.pm', # finds $VERSION
+    'VERSION_FROM' => 'lib/Text/BarGraph.pm', # finds $VERSION
+    ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
+      (ABSTRACT_FROM => 'lib/Text/BarGraph.pm', # retrieve abstract from module
+       AUTHOR     => 'Kirk Baucom <kbaucom@schizoid.com>') : ()),		     
 );
