@@ -1,5 +1,8 @@
 Revision history for Perl extension Text::BarGraph
 
+Version 1.1 (2011/03/30)
+	- Accept configuration parameters in the constructor
+
 Version 1.0 (2005/11/02)
 	- Use Term::ANSIColor if it's available
 	- Renamed poorly named methods:

@@ -1,9 +1,11 @@
 package Text::BarGraph;
 
-use 5.006;
 use strict;
 use warnings;
+
 use vars qw /$AUTOLOAD $VERSION/;
+
+use Carp;
 
 =head1 NAME
 
@@ -42,9 +44,9 @@ a graph and the values are the magnitudes of those bars.
 
 =cut
 
-our $VERSION = 1.0;
+our $VERSION = 1.1;
 our %fields = (
-	dot		=> "#",		# character to graph with
+	dot		=> '#',		# character to graph with
 	num		=> 1,		# display data value in ()'s
 	enable_color	=> 0,		# whether or not to color the graph
 	sortvalue	=> "key",	# key or data
@@ -72,6 +74,16 @@ sub new {
 		%fields,
 	};
 
+	my %args = @_;
+
+	while(my ($field, $value) = each %args) {
+		if(exists($self->{'_permitted'}{$field})) {
+			$self->{$field} = $value;
+		} else {
+			croak "Invalid field name '$field' in class $class";
+		}
+	}
+
 	if(eval "require Term::ANSIColor") {
 		import Term::ANSIColor;
 		$self->{'colortype'} = "module";
@@ -90,8 +102,8 @@ sub AUTOLOAD {
 	my $type = ref($self) || die "$self is not an object";
 	my $name = $AUTOLOAD;
 	$name =~ s/.*://; # strip fully qualified portion
-	unless (exists $self->{_permitted}->{$name} ) {
-		die "Can't access `$name' field in object of class $type";
+	unless (exists $self->{'_permitted'}{$name} ) {
+		croak "Invalid field name '$name' in class $type";
 	}
 
 	if (@_) {
@@ -119,11 +131,13 @@ sub graph {
  	my $min_data;
 	my $max_data;
 
+	my $columns = $self->{'columns'};
+
 	# silently fail to autoresize if we are not talking to a tty
 	# OR if the Term::ReadKey module doesn't exist
 	if($self->{'autosize'} && -t STDOUT && eval "require Term::ReadKey") {
 		import Term::ReadKey;
-		($self->{'columns'}) = GetTerminalSize('STDOUT');
+		($columns) = GetTerminalSize('STDOUT');
 	}
 
 	# find initial column width and scaling
@@ -145,15 +159,15 @@ sub graph {
 	# determine how many columns are left for the graph after
 	# the labels
 	my $data_length = length($max_data);
-	if($label_length > ($self->{'columns'} * .25)) { 
+	if($label_length > ($columns * .25)) { 
 		$sep = "\n"; 
-		$barsize = $self->{'columns'};
+		$barsize = $columns;
 	} else { 
 		$sep = " "; 
 		if($self->{'num'}) {
-			$barsize = $self->{'columns'} - ($label_length + $data_length + 4);
+			$barsize = $columns - ($label_length + $data_length + 4);
 		} else {
-			$barsize = $self->{'columns'} - ($label_length + 1);
+			$barsize = $columns - ($label_length + 1);
 		}
 	}
 
@@ -288,7 +302,8 @@ Default: string
   $graph->zero(20);
 
 Sets the initial value (far left) of the graph. Ignored
-if autozero is set.
+if autozero is set. When zero is non-zero, an extra row
+will be printed to identify the minimum value.
 
 Default: 0
 
@@ -349,7 +364,7 @@ Kirk Baucom E<lt>kbaucom@schizoid.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 Kirk Baucom.  All rights reserved.  This package
+Copyright (c) 2011 Kirk Baucom.  All rights reserved.  This package
 is free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

@@ -2,9 +2,7 @@ lib/Text/BarGraph.pm
 Changes
 Makefile.PL
 MANIFEST
-MIGRATION
 README
 t/use.t
-t/pod.t
-t/pod-coverage.t
 examples/graphtest.pl
+META.yml

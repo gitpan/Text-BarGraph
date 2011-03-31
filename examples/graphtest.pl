@@ -1,62 +1,88 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # Example of the Text::Bargraph module
 #
 # Kirk Baucom <kbaucom@schizoid.com>
 
+use strict;
+use warnings;
+
 use Text::BarGraph;
-
-$g = Text::BarGraph->new();
-
-#### OPTIONS ####
 
 # for the options below, if an option is a toggle, 0 = off, 1 = on
 # all of the options have defaults
 
-# whether or not to print the numerical magnitude of the bar
-$g->num(1);    # default: 0 (off)
+my $g = Text::BarGraph->new(
 
-# what value to set the far right of the screen to
-$g->max_data(100);   # default: automatically determined from data
+	# what character to use when printing the graphs
+	# default: '.'
+	dot => '#',
+	
+	# add color to the graph, denoting the size of the bars
+	# default: 0 (off)
+	enable_color => 1,
 
-# what character to use when printing the graphs
-$g->dot('#');    # default: '.'
+	# whether or not to print the numerical magnitude of the bar
+	# default: 0 (off)
+	num => 1,
 
-# what value to set the far left of the screen to
-$g->zero(10);   # default: 0
+	# force the graph to be larger than the data.
+	# ignored if less than the max value in the data itself.
+	# default: automatically determined from data
+	max_data => 500,
 
-# whether or not to automatically determine the value of the far left side
-# of the screen. if this is set, the value of 'zero' is ignored.
-#$g->autozero(1);   # default: 0 (off)
+	# whether or not to automatically determine the size of your screen. this
+	# requires the module Term::Readkey. if this is off, your screen is assumed
+	# to be 80 columns
+	# default: 1 (on)
+	autosize => 1,
 
-# whether or not to automatically determine the size of your screen. this
-# requires the module Term::Readkey. if this is off, your screen is assumed
-# to be 80 columns
-$g->autosize(1);    # default: 1 (on)
+	# number of columns on your display
+	# this is ignored if autosize is set
+	# default: 80
+	columns => 40,
 
-# number of columns on your display
-# this is ignored if autosize is set
-$g->columns(80);      # default: 80
+	# what value to set the far left of the screen to
+	# default: 0
+	zero => 0,
 
-# whether to sort the data by keys ("key") or values ("data"). 
-$g->sortvalue("data");  # default: "key"
+	# whether or not to automatically determine the value of the far left side
+	# of the screen. if this is set, the value of 'zero' is ignored.
+	# default: 0 (off)
+	autozero => 0,
 
-# whether to sort keys numerically or stringily (stringmatogically?)
-$g->sorttype("numeric");  # default: "string"
+	# whether to sort the data by keys ("key") or values ("data"). 
+	# default: "key"
+	sortvalue => 'data',
 
-# add color to the graph, denoting the size of the bars
-$g->enable_color(1);      # default: 0 (off)
+	# whether to sort keys numerically ("numeric") or lexicographically ("string")
+	# ignored if the sortvalue is data, which is always numeric
+	# default: "string"
+	sorttype => 'numeric'
+
+
+);
+
 
 # a small graph of some random numbers  
 
-%hash = (
+my %data = (
   alpha => 300,
   beta  => 400,
-  gamma => 250,
+  gamma => 220,
   delta => 350,
 );      
 
 # print the graph. note that the graph routine just returns a text string,
-# so you can manipulate it (for example, to HTMLize it) before you print it.
+# so you can manipulate it before you print it.
 
-print $g->graph(\%hash);
+print "\nAutosized to screen width, if Term::ReadKey is available:\n";
+print $g->graph(\%data);
+
+
+# you can also modify any option on the object itself
+print "\n40 columns, no autosizing:\n";
+$g->dot(')');
+$g->autosize(0);
+$g->max_data(0);
+print $g->graph(\%data);
